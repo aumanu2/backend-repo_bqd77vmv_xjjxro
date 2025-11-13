@@ -78,8 +78,10 @@ class SearchResponseItem(BaseModel):
     distance_km: Optional[float] = None
 
 @app.get("/api/pharmacies", response_model=List[Pharmacy])
-def list_pharmacies():
-    return get_documents("pharmacy")
+def list_pharmacies(city: Optional[str] = None):
+    """List pharmacies. Optionally filter by city (e.g., city=Ouagadougou)."""
+    filter_q = {"city": {"$regex": f"^{city}$", "$options": "i"}} if city else {}
+    return get_documents("pharmacy", filter_q, limit=1000)
 
 class SearchQueryParams(BaseModel):
     q: Optional[str] = None
